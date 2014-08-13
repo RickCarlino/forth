@@ -1,6 +1,7 @@
 # A FORTH interpreter for people on a budget..
-class Frothy::Interpreter
+class Stacker::Interpreter
 
   def initialize
   end
+
 end
