@@ -1,5 +1,5 @@
 class String
-  def is_integer?
+  def number?
     self.to_i.to_s == self
   end
 end
@@ -10,44 +10,50 @@ class Stacker::Interpreter
   attr_reader :stack, :words
 
   def initialize
-    @stack = []
-    @words = Hash.new(->{ raise 'WORD NOT FOUND'})
-    @words.merge!({
-    add:      ->(){ stack.push(stack.pop + stack.pop) },
-    subtract: ->(){ one = stack.pop; two = stack.pop; stack.push(two - one) },
-    multiply: ->(){ stack.push(stack.pop * stack.pop) },
-    divide:   ->(){ one = stack.pop; two = stack.pop; stack.push(two / one) },
-    mod:      ->(){ one = stack.pop; two = stack.pop; stack.push(two % one) },
-    :> =>     ->(){ one = stack.pop; two = stack.pop; stack.push((two > one).to_s.to_sym) },
-    :< =>     ->(){ one = stack.pop; two = stack.pop; stack.push((two < one).to_s.to_sym) },
-"=".to_sym => ->(){ stack.push((stack.pop == stack.pop).to_s.to_sym) },
-    false:    ->(){ stack.push(:false)},
-    true:     ->(){ stack.push(:true)},
-    rot:      ->(){ stack = stack.rotate},
-    drop:     ->(){ stack.pop },
+    @stack   = []
+    @words   = Hash.new(->{ raise 'WORD NOT FOUND'}).merge(std_lib)
+  end
+
+  def std_lib
+    {
+    "=".to_sym=> ->(){ stack.push((stack.pop == stack.pop).to_s.to_sym) },
+    # TODO: Use 0 / 1 for truthiness
+    :>     => ->(){ push((pop > pop).to_s.to_sym) },
+    :<     => ->(){ push((pop < pop).to_s.to_sym) },
+    add:      ->(){ push(pop + pop) },
+    subtract: ->(){ push(pop - pop) },
+    multiply: ->(){ push(pop * pop) },
+    divide:   ->(){ push(pop / pop) },
+    mod:      ->(){ push(pop % pop) },
+    false:    ->(){ push(0) },
+    true:     ->(){ push(1) },
+    rot:      ->(){ stack.rotate! },
+    drop:     ->(){ pop },
     swap:     ->(){ one = stack.pop; two = stack.pop; stack.push(one); stack.push(two) },
     dup:      ->(){ dbl = stack.pop; 2.times{ stack.push(dbl) } }
-    })
+    }
   end
 
   def execute(args = [])
-    args.each do |arg|
-      interpret(arg)
-    end
-    return @stack
+    args.each{|arg| exec(arg)}
+    @stack
   end
 
-  def interpret(arg)
-    if arg.is_integer?
-      stack.push(arg.to_i)
-    else
-      arg = arg.gsub(':', '').downcase.to_sym
-      @words[arg][]
-    end
+  # Interpret a single command.
+  def exec(arg)
+      arg.number? ? stack.push(arg.to_i) : @words[arg.downcase.to_sym][]
   end
 
-  def inspect
-    self.stack
+  def pop
+    stack.pop
+  end
+
+  def push(arg)
+    stack.push arg
+  end
+
+  def swp
+    exec('swap')
   end
 
 end
