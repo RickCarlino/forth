@@ -7,51 +7,46 @@ require_relative '../lib/stacker'
 require "minitest/autorun"
 
 describe "Stacker::Interpreter" do
-
   let(:interpreter) { Stacker::Interpreter.new }
 
   it "implements ADD" do
-    execute %w[
+    interpreter.execute %w[
       2
       3
       ADD
     ]
-
     interpreter.stack.must_equal([5])
   end
 
   it "implements SUBTRACT command" do
-    execute %w[
+    interpreter.execute %w[
       1
       2
       SUBTRACT
     ]
-    
     interpreter.stack.must_equal([-1])
   end
   
   it "implements MULTIPLY" do
-    execute %w[
+    interpreter.execute %w[
       3
       10
       MULTIPLY
     ]
-    
     interpreter.stack.must_equal([30])
   end
 
   it "implements DIVIDE" do
-    execute %w[
+    interpreter.execute %w[
       6
       2
       DIVIDE
       ]
-      
     interpreter.stack.must_equal([3])
   end
   
   it "implements MOD" do
-    execute %w[
+    interpreter.execute %w[
       4
       3
       MOD
@@ -64,20 +59,19 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements <" do
-    execute %w[
+    interpreter.execute %w[
       3
       10
       <
       5
       4
       <
-    ]
-
+    ]    
     interpreter.stack.must_equal([:true, :false])
   end
   
   it "implements >" do
-    execute %w[
+    interpreter.execute %w[
       3
       10
       >
@@ -85,12 +79,11 @@ describe "Stacker::Interpreter" do
       4
       >
     ]
-    
     interpreter.stack.must_equal([:false, :true])
   end
 
   it "implements =" do
-    execute %w[
+    interpreter.execute %w[
       1
       1
       =
@@ -98,12 +91,13 @@ describe "Stacker::Interpreter" do
       2
       =
     ]
-
+    binding.pry
+    
     interpreter.stack.must_equal([:true, :false])
   end
   
   it "implements the IF command" do
-    execute %w[
+    interpreter.execute %w[
       :true
       IF
       1
@@ -121,7 +115,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements the IF command in nesting" do
-    execute %w[ 
+    interpreter.execute %w[ 
        :true
        IF
        :false
@@ -147,7 +141,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements the IF command in another 2-level nesting" do
-    execute %w[
+    interpreter.execute %w[
       :false
       IF
       0
@@ -194,7 +188,7 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements the IF command in 3-level nesting" do
-    execute %w[
+    interpreter.execute %w[
       :true
       IF
       :false
@@ -243,7 +237,7 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements TIMES command" do
-    execute %w[
+    interpreter.execute %w[
       5
       3
       TIMES
@@ -256,7 +250,7 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements TIMES inside of IF command" do
-    execute %w[
+    interpreter.execute %w[
       :true
       IF
       5
@@ -286,7 +280,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements IF inside of TIMES command" do
-    execute %w[
+    interpreter.execute %w[
       5
       3
       TIMES
@@ -308,7 +302,7 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements PROCEDURE command" do
-    execute %w[
+    interpreter.execute %w[
       PROCEDURE\ DOUBLE
       2
       MULTIPLY
@@ -322,7 +316,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements DUP command" do
-    execute %w[
+    interpreter.execute %w[
       1
       2
       DUP
@@ -332,7 +326,7 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements SWAP command" do
-    execute %w[
+    interpreter.execute %w[
       1
       2
       SWAP
@@ -342,7 +336,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements DROP" do
-    execute %w[
+    interpreter.execute %w[
       1
       2
       DROP
@@ -352,7 +346,7 @@ describe "Stacker::Interpreter" do
   end
   
   it "implements ROT" do
-    execute %w[
+    interpreter.execute %w[
       :foo
       :bar
       :baz
@@ -367,17 +361,12 @@ describe "Stacker::Interpreter" do
   end
 
   it "implements support for adding arbitrary symbols to the stack" do
-    execute %w[
+    interpreter.execute %w[
       :foo
       :bar
       :baz
     ]
 
     interpreter.stack.must_equal([:foo,:bar,:baz])
-  end
-
-  def execute(commands)
-    commands.each { |c| interpreter.execute(c) }
-  end
-  
+  end  
 end
