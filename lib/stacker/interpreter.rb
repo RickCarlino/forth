@@ -22,7 +22,11 @@ class Stacker::Interpreter
     :< =>     ->(){ one = stack.pop; two = stack.pop; stack.push((two < one).to_s.to_sym) },
 "=".to_sym => ->(){ stack.push((stack.pop == stack.pop).to_s.to_sym) },
     false:    ->(){ stack.push(:false)},
-    true:     ->(){ stack.push(:true)}
+    true:     ->(){ stack.push(:true)},
+    rot:      ->(){ stack = stack.rotate},
+    drop:     ->(){ stack.pop },
+    swap:     ->(){ one = stack.pop; two = stack.pop; stack.push(one); stack.push(two) },
+    dup:      ->(){ dbl = stack.pop; 2.times{ stack.push(dbl) } }
     })
   end
 

@@ -90,9 +90,7 @@ describe "Stacker::Interpreter" do
       1
       2
       =
-    ]
-    binding.pry
-    
+    ]    
     interpreter.stack.must_equal([:true, :false])
   end
   
@@ -110,7 +108,6 @@ describe "Stacker::Interpreter" do
       5
       MULTIPLY
     ]
-    
     interpreter.stack.must_equal([3, 10])
   end
   
